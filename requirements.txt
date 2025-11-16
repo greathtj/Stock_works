@@ -1,0 +1,4 @@
+pandas==2.3.3
+pykrx==1.0.51
+PySide6==6.10.0
+qdarkstyle==3.2.3
