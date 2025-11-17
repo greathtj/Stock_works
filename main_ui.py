@@ -16,10 +16,11 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QFrame, QHBoxLayout,
-    QListWidget, QListWidgetItem, QMainWindow, QMenu,
-    QMenuBar, QSizePolicy, QStatusBar, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QDateEdit, QFrame,
+    QHBoxLayout, QHeaderView, QLabel, QListWidget,
+    QListWidgetItem, QMainWindow, QMenu, QMenuBar,
+    QPushButton, QSizePolicy, QStatusBar, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -68,6 +69,75 @@ class Ui_MainWindow(object):
         self.frame_2.setObjectName(u"frame_2")
         self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_3 = QVBoxLayout(self.frame_2)
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout_2 = QHBoxLayout()
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label = QLabel(self.frame_2)
+        self.label.setObjectName(u"label")
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_2.addWidget(self.label)
+
+        self.dateEditStart = QDateEdit(self.frame_2)
+        self.dateEditStart.setObjectName(u"dateEditStart")
+        self.dateEditStart.setDateTime(QDateTime(QDate(2024, 1, 1), QTime(0, 0, 0)))
+
+        self.horizontalLayout_2.addWidget(self.dateEditStart)
+
+        self.label_2 = QLabel(self.frame_2)
+        self.label_2.setObjectName(u"label_2")
+        sizePolicy.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy)
+
+        self.horizontalLayout_2.addWidget(self.label_2)
+
+        self.dateEditEnd = QDateEdit(self.frame_2)
+        self.dateEditEnd.setObjectName(u"dateEditEnd")
+        self.dateEditEnd.setDateTime(QDateTime(QDate(2025, 1, 1), QTime(0, 0, 0)))
+
+        self.horizontalLayout_2.addWidget(self.dateEditEnd)
+
+        self.pushButtonReload = QPushButton(self.frame_2)
+        self.pushButtonReload.setObjectName(u"pushButtonReload")
+
+        self.horizontalLayout_2.addWidget(self.pushButtonReload)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_2)
+
+        self.frame_5 = QFrame(self.frame_2)
+        self.frame_5.setObjectName(u"frame_5")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.frame_5.sizePolicy().hasHeightForWidth())
+        self.frame_5.setSizePolicy(sizePolicy1)
+        self.frame_5.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_5.setFrameShadow(QFrame.Shadow.Raised)
+        self.horizontalLayout_3 = QHBoxLayout(self.frame_5)
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.tableWidgetHistory = QTableWidget(self.frame_5)
+        self.tableWidgetHistory.setObjectName(u"tableWidgetHistory")
+        self.tableWidgetHistory.setMinimumSize(QSize(400, 0))
+        self.tableWidgetHistory.setMaximumSize(QSize(400, 16777215))
+
+        self.horizontalLayout_3.addWidget(self.tableWidgetHistory)
+
+        self.frame_6 = QFrame(self.frame_5)
+        self.frame_6.setObjectName(u"frame_6")
+        self.frame_6.setFrameShape(QFrame.Shape.StyledPanel)
+        self.frame_6.setFrameShadow(QFrame.Shadow.Raised)
+
+        self.horizontalLayout_3.addWidget(self.frame_6)
+
+
+        self.verticalLayout_3.addWidget(self.frame_5)
+
 
         self.horizontalLayout.addWidget(self.frame_2)
 
@@ -110,6 +180,9 @@ class Ui_MainWindow(object):
         self.comboBoxMarket.setItemText(2, QCoreApplication.translate("MainWindow", u"NYSE", None))
         self.comboBoxMarket.setItemText(3, QCoreApplication.translate("MainWindow", u"NASDAQ", None))
 
+        self.label.setText(QCoreApplication.translate("MainWindow", u"Start", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"End", None))
+        self.pushButtonReload.setText(QCoreApplication.translate("MainWindow", u"Reload", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
 

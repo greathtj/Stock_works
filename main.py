@@ -2,7 +2,8 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="pykrx")
 import sys
 import qdarkstyle
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PySide6.QtCore import QDate
 from main_ui import Ui_MainWindow
 from pykrx import stock
 import datetime
@@ -20,8 +21,57 @@ class MainWindow(QMainWindow):
         # Connect actionExit to close the application
         self.ui.actionExit.triggered.connect(self.close_application)
 
+        # Set dateEditEnd to today's date
+        self.ui.dateEditEnd.setDate(QDate.currentDate())
+
+        # Set dateEditStart to today minus one year
+        self.ui.dateEditStart.setDate(QDate.currentDate().addYears(-1))
+
+        # Connect listWidgetStocks to update_stock_history
+        self.ui.listWidgetStocks.currentItemChanged.connect(self.update_stock_history)
+        # Connect pushButtonReload to update_stock_history
+        self.ui.pushButtonReload.clicked.connect(self.update_stock_history)
+
     def close_application(self):
         self.close()
+
+    def update_stock_history(self):
+        current_item = self.ui.listWidgetStocks.currentItem()
+        if current_item is None:
+            return
+
+        # Extract ticker from the selected item
+        ticker = current_item.text().split("(")[-1].replace(")", "")
+
+        # Get start and end dates
+        start_date = self.ui.dateEditStart.date().toString("yyyyMMdd")
+        end_date = self.ui.dateEditEnd.date().toString("yyyyMMdd")
+
+        # Fetch stock history
+        try:
+            df = stock.get_market_ohlcv(start_date, end_date, ticker)
+            self.populate_history_table(df)
+        except Exception as e:
+            print(f"Error fetching stock history: {e}")
+            self.ui.tableWidgetHistory.clear()
+            self.ui.tableWidgetHistory.setRowCount(0)
+            self.ui.tableWidgetHistory.setColumnCount(0)
+
+    def populate_history_table(self, df):
+        self.ui.tableWidgetHistory.clear()
+        
+        # Add 'Date' as the first column header
+        headers = ["Date"] + list(df.columns)
+        self.ui.tableWidgetHistory.setColumnCount(len(headers))
+        self.ui.tableWidgetHistory.setHorizontalHeaderLabels(headers)
+        self.ui.tableWidgetHistory.setRowCount(len(df))
+
+        for i, (index, row) in enumerate(df.iterrows()):
+            # Set the date in the first column
+            self.ui.tableWidgetHistory.setItem(i, 0, QTableWidgetItem(str(index.strftime("%Y-%m-%d"))))
+            # Set the rest of the data in subsequent columns
+            for j, col in enumerate(df.columns):
+                self.ui.tableWidgetHistory.setItem(i, j + 1, QTableWidgetItem(str(row[col])))
 
     def update_stock_list(self):
         selected_market = self.ui.comboBoxMarket.currentText()
