@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="pykrx")
 import sys
 import qdarkstyle
 from PySide6.QtWidgets import QApplication, QMainWindow
