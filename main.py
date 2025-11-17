@@ -2,12 +2,20 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="pykrx")
 import sys
 import qdarkstyle
-from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QVBoxLayout
 from PySide6.QtCore import QDate
 from main_ui import Ui_MainWindow
 from pykrx import stock
 import datetime
 import pandas as pd
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
+
+class MplCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -32,12 +40,29 @@ class MainWindow(QMainWindow):
         # Connect pushButtonReload to update_stock_history
         self.ui.pushButtonReload.clicked.connect(self.update_stock_history)
 
+        # Create plot canvases
+        self.price_canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.ui.verticalLayoutPlotPrice.addWidget(self.price_canvas)
+        self.amount_canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.ui.verticalLayoutPlotAmout.addWidget(self.amount_canvas)
+
     def close_application(self):
         self.close()
 
     def update_stock_history(self):
         current_item = self.ui.listWidgetStocks.currentItem()
         if current_item is None:
+            return
+
+        selected_market = self.ui.comboBoxMarket.currentText()
+        if selected_market not in ["KOSPI", "KOSDAQ"]:
+            self.ui.tableWidgetHistory.clear()
+            self.ui.tableWidgetHistory.setRowCount(0)
+            self.ui.tableWidgetHistory.setColumnCount(0)
+            self.price_canvas.axes.cla()
+            self.price_canvas.draw()
+            self.amount_canvas.axes.cla()
+            self.amount_canvas.draw()
             return
 
         # Extract ticker from the selected item
@@ -51,11 +76,25 @@ class MainWindow(QMainWindow):
         try:
             df = stock.get_market_ohlcv(start_date, end_date, ticker)
             self.populate_history_table(df)
+            self.plot_stock_data(df)
         except Exception as e:
             print(f"Error fetching stock history: {e}")
             self.ui.tableWidgetHistory.clear()
             self.ui.tableWidgetHistory.setRowCount(0)
             self.ui.tableWidgetHistory.setColumnCount(0)
+
+    def plot_stock_data(self, df):
+        # Plot price
+        self.price_canvas.axes.cla()
+        self.price_canvas.axes.plot(df.index, df['종가'])
+        self.price_canvas.axes.set_title("Price")
+        self.price_canvas.draw()
+
+        # Plot volume
+        self.amount_canvas.axes.cla()
+        self.amount_canvas.axes.bar(df.index, df['거래량'])
+        self.amount_canvas.axes.set_title("Volume")
+        self.amount_canvas.draw()
 
     def populate_history_table(self, df):
         self.ui.tableWidgetHistory.clear()

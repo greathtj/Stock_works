@@ -200,6 +200,14 @@
                <property name="frameShadow">
                 <enum>QFrame::Shadow::Raised</enum>
                </property>
+               <layout class="QVBoxLayout" name="verticalLayout_6">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutPlotPrice"/>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayoutPlotAmout"/>
+                </item>
+               </layout>
               </widget>
              </item>
             </layout>

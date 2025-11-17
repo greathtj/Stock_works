@@ -132,6 +132,18 @@ class Ui_MainWindow(object):
         self.frame_6.setObjectName(u"frame_6")
         self.frame_6.setFrameShape(QFrame.Shape.StyledPanel)
         self.frame_6.setFrameShadow(QFrame.Shadow.Raised)
+        self.verticalLayout_6 = QVBoxLayout(self.frame_6)
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.verticalLayoutPlotPrice = QVBoxLayout()
+        self.verticalLayoutPlotPrice.setObjectName(u"verticalLayoutPlotPrice")
+
+        self.verticalLayout_6.addLayout(self.verticalLayoutPlotPrice)
+
+        self.verticalLayoutPlotAmout = QVBoxLayout()
+        self.verticalLayoutPlotAmout.setObjectName(u"verticalLayoutPlotAmout")
+
+        self.verticalLayout_6.addLayout(self.verticalLayoutPlotAmout)
+
 
         self.horizontalLayout_3.addWidget(self.frame_6)
 
