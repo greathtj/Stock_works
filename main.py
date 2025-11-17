@@ -8,6 +8,7 @@ from main_ui import Ui_MainWindow
 from pykrx import stock
 import datetime
 import pandas as pd
+import yfinance as yf
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
@@ -55,44 +56,42 @@ class MainWindow(QMainWindow):
             return
 
         selected_market = self.ui.comboBoxMarket.currentText()
-        if selected_market not in ["KOSPI", "KOSDAQ"]:
-            self.ui.tableWidgetHistory.clear()
-            self.ui.tableWidgetHistory.setRowCount(0)
-            self.ui.tableWidgetHistory.setColumnCount(0)
-            self.price_canvas.axes.cla()
-            self.price_canvas.draw()
-            self.amount_canvas.axes.cla()
-            self.amount_canvas.draw()
-            return
-
-        # Extract ticker from the selected item
         ticker = current_item.text().split("(")[-1].replace(")", "")
+        start_date = self.ui.dateEditStart.date().toString("yyyy-MM-dd")
+        end_date = self.ui.dateEditEnd.date().toString("yyyy-MM-dd")
 
-        # Get start and end dates
-        start_date = self.ui.dateEditStart.date().toString("yyyyMMdd")
-        end_date = self.ui.dateEditEnd.date().toString("yyyyMMdd")
-
-        # Fetch stock history
         try:
-            df = stock.get_market_ohlcv(start_date, end_date, ticker)
+            if selected_market in ["KOSPI", "KOSDAQ"]:
+                df = stock.get_market_ohlcv(self.ui.dateEditStart.date().toString("yyyyMMdd"), self.ui.dateEditEnd.date().toString("yyyyMMdd"), ticker)
+            elif selected_market in ["NYSE", "NASDAQ"]:
+                df = yf.Ticker(ticker).history(start=start_date, end=end_date)
+            else:
+                self.ui.tableWidgetHistory.clear()
+                self.ui.tableWidgetHistory.setRowCount(0)
+                self.ui.tableWidgetHistory.setColumnCount(0)
+                return
+
             self.populate_history_table(df)
-            self.plot_stock_data(df)
+            self.plot_stock_data(df, selected_market)
         except Exception as e:
             print(f"Error fetching stock history: {e}")
             self.ui.tableWidgetHistory.clear()
             self.ui.tableWidgetHistory.setRowCount(0)
             self.ui.tableWidgetHistory.setColumnCount(0)
 
-    def plot_stock_data(self, df):
+    def plot_stock_data(self, df, market):
+        price_col = '종가' if market in ["KOSPI", "KOSDAQ"] else 'Close'
+        volume_col = '거래량' if market in ["KOSPI", "KOSDAQ"] else 'Volume'
+
         # Plot price
         self.price_canvas.axes.cla()
-        self.price_canvas.axes.plot(df.index, df['종가'])
+        self.price_canvas.axes.plot(df.index, df[price_col])
         self.price_canvas.axes.set_title("Price")
         self.price_canvas.draw()
 
         # Plot volume
         self.amount_canvas.axes.cla()
-        self.amount_canvas.axes.bar(df.index, df['거래량'])
+        self.amount_canvas.axes.bar(df.index, df[volume_col])
         self.amount_canvas.axes.set_title("Volume")
         self.amount_canvas.draw()
 
