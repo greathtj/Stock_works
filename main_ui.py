@@ -17,10 +17,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
 from PySide6.QtWidgets import (QApplication, QComboBox, QDateEdit, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QListWidget,
-    QListWidgetItem, QMainWindow, QMenu, QMenuBar,
-    QPushButton, QSizePolicy, QStatusBar, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QListWidget, QListWidgetItem, QMainWindow, QMenu,
+    QMenuBar, QPushButton, QSizePolicy, QStatusBar,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -61,6 +61,11 @@ class Ui_MainWindow(object):
         self.listWidgetStocks.setObjectName(u"listWidgetStocks")
 
         self.verticalLayout_2.addWidget(self.listWidgetStocks)
+
+        self.lineEditKeyWord = QLineEdit(self.frame_4)
+        self.lineEditKeyWord.setObjectName(u"lineEditKeyWord")
+
+        self.verticalLayout_2.addWidget(self.lineEditKeyWord)
 
 
         self.horizontalLayout.addWidget(self.frame_4)

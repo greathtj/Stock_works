@@ -84,6 +84,9 @@
           <item>
            <widget class="QListWidget" name="listWidgetStocks"/>
           </item>
+          <item>
+           <widget class="QLineEdit" name="lineEditKeyWord"/>
+          </item>
          </layout>
         </widget>
        </item>

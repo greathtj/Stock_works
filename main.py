@@ -41,11 +41,20 @@ class MainWindow(QMainWindow):
         # Connect pushButtonReload to update_stock_history
         self.ui.pushButtonReload.clicked.connect(self.update_stock_history)
 
+        # Connect lineEditKeyWord to filter_stock_list
+        self.ui.lineEditKeyWord.textChanged.connect(self.filter_stock_list)
+
         # Create plot canvases
         self.price_canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.ui.verticalLayoutPlotPrice.addWidget(self.price_canvas)
         self.amount_canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.ui.verticalLayoutPlotAmout.addWidget(self.amount_canvas)
+
+    def filter_stock_list(self):
+        keyword = self.ui.lineEditKeyWord.text().lower()
+        for i in range(self.ui.listWidgetStocks.count()):
+            item = self.ui.listWidgetStocks.item(i)
+            item.setHidden(keyword not in item.text().lower())
 
     def close_application(self):
         self.close()
