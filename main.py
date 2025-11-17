@@ -17,6 +17,12 @@ class MainWindow(QMainWindow):
         # Initial call to populate the list when the app starts
         self.update_stock_list()
 
+        # Connect actionExit to close the application
+        self.ui.actionExit.triggered.connect(self.close_application)
+
+    def close_application(self):
+        self.close()
+
     def update_stock_list(self):
         selected_market = self.ui.comboBoxMarket.currentText()
         self.ui.listWidgetStocks.clear()
