@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
 
         self.dateEditStart = QDateEdit(self.tabData)
         self.dateEditStart.setObjectName(u"dateEditStart")
-        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 31), QTime(6, 0, 0)))
+        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 30), QTime(21, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditStart)
 
@@ -148,7 +148,7 @@ class Ui_MainWindow(object):
 
         self.dateEditEnd = QDateEdit(self.tabData)
         self.dateEditEnd.setObjectName(u"dateEditEnd")
-        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 31), QTime(6, 0, 0)))
+        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 30), QTime(21, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditEnd)
 
@@ -215,19 +215,27 @@ class Ui_MainWindow(object):
         self.tabWidget.addTab(self.tabData, "")
         self.tabTopDrops = QWidget()
         self.tabTopDrops.setObjectName(u"tabTopDrops")
-        self.horizontalLayout_4 = QHBoxLayout(self.tabTopDrops)
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3 = QVBoxLayout(self.tabTopDrops)
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.horizontalLayout_4 = QHBoxLayout()
+        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.comboBoxDeclinersPeriod = QComboBox(self.tabTopDrops)
+        self.comboBoxDeclinersPeriod.setObjectName(u"comboBoxDeclinersPeriod")
 
-        self.horizontalLayout_4.addLayout(self.verticalLayout_3)
+        self.horizontalLayout_4.addWidget(self.comboBoxDeclinersPeriod)
 
-        self.frame_2 = QFrame(self.tabTopDrops)
-        self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setFrameShape(QFrame.Shape.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Shadow.Raised)
+        self.pushButtonFindDecliners = QPushButton(self.tabTopDrops)
+        self.pushButtonFindDecliners.setObjectName(u"pushButtonFindDecliners")
 
-        self.horizontalLayout_4.addWidget(self.frame_2)
+        self.horizontalLayout_4.addWidget(self.pushButtonFindDecliners)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_4)
+
+        self.tableWidgetDecliners = QTableWidget(self.tabTopDrops)
+        self.tableWidgetDecliners.setObjectName(u"tableWidgetDecliners")
+
+        self.verticalLayout_3.addWidget(self.tableWidgetDecliners)
 
         self.tabWidget.addTab(self.tabTopDrops, "")
 
@@ -262,7 +270,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidget_2.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -291,6 +299,7 @@ class Ui_MainWindow(object):
 
         self.pushButtonReload.setText(QCoreApplication.translate("MainWindow", u"Reload", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabData), QCoreApplication.translate("MainWindow", u"Data", None))
+        self.pushButtonFindDecliners.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabTopDrops), QCoreApplication.translate("MainWindow", u"Top drops", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi

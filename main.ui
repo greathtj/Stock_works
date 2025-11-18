@@ -180,7 +180,7 @@
        <item>
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabData">
           <attribute name="title">
@@ -206,12 +206,12 @@
               <widget class="QDateEdit" name="dateEditStart">
                <property name="dateTime">
                 <datetime>
-                 <hour>6</hour>
+                 <hour>21</hour>
                  <minute>0</minute>
                  <second>0</second>
                  <year>2023</year>
                  <month>12</month>
-                 <day>31</day>
+                 <day>30</day>
                 </datetime>
                </property>
               </widget>
@@ -233,12 +233,12 @@
               <widget class="QDateEdit" name="dateEditEnd">
                <property name="dateTime">
                 <datetime>
-                 <hour>6</hour>
+                 <hour>21</hour>
                  <minute>0</minute>
                  <second>0</second>
                  <year>2024</year>
                  <month>12</month>
-                 <day>31</day>
+                 <day>30</day>
                 </datetime>
                </property>
               </widget>
@@ -356,19 +356,23 @@
           <attribute name="title">
            <string>Top drops</string>
           </attribute>
-          <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QVBoxLayout" name="verticalLayout_3"/>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QComboBox" name="comboBoxDeclinersPeriod"/>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonFindDecliners">
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QFrame" name="frame_2">
-             <property name="frameShape">
-              <enum>QFrame::Shape::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Shadow::Raised</enum>
-             </property>
-            </widget>
+            <widget class="QTableWidget" name="tableWidgetDecliners"/>
            </item>
           </layout>
          </widget>

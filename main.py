@@ -48,7 +48,7 @@ class Worker(QThread):
                 try:
                     df = stock.get_market_ohlcv(start_date.strftime("%Y%m%d"), today.strftime("%Y%m%d"), ticker)
                     if not df.empty:
-                        price_change = (df['종가'][-1] - df['종가'][0]) / df['종가'][0] * 100
+                        price_change = (df['종가'].iloc[-1] - df['종가'].iloc[0]) / df['종가'].iloc[0] * 100
                         name = stock.get_market_ticker_name(ticker)
                         results.append((name, ticker, price_change))
                 except Exception as e:
@@ -70,7 +70,7 @@ class Worker(QThread):
                     try:
                         df = yf.Ticker(ticker).history(start=start_date_str, end=end_date_str)
                         if not df.empty:
-                            price_change = (df['Close'][-1] - df['Close'][0]) / df['Close'][0] * 100
+                            price_change = (df['Close'].iloc[-1] - df['Close'].iloc[0]) / df['Close'].iloc[0] * 100
                             results.append((name, ticker, price_change))
                     except Exception as e:
                         print(f"Error fetching {ticker}: {e}")
@@ -102,7 +102,7 @@ class MainWindow(QMainWindow):
         # Connect listWidgetStocks to update_stock_history
         self.ui.listWidgetStocks.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
         # Connect pushButtonReload to update_stock_history
-        self.ui.pushButtonReload.clicked.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
+        self.ui.pushButtonReload.clicked.connect(self.reload_active_stock_history)
 
         # Connect listWidgetSelectedTickers to update_stock_history
         self.ui.listWidgetSelectedTickers.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetSelectedTickers))
@@ -189,6 +189,13 @@ class MainWindow(QMainWindow):
             self.ui.pushButtonFindDecliners.setText("Find Decliners")
             self.ui.pushButtonFindDecliners.setEnabled(True)
 
+    def reload_active_stock_history(self):
+        if self.ui.tabWidget_2.currentWidget() == self.ui.tabSelected:
+            current_list_widget = self.ui.listWidgetSelectedTickers
+        else:
+            current_list_widget = self.ui.listWidgetStocks
+        self.update_stock_history(current_list_widget)
+
     def period_changed(self):
         period = self.ui.comboBoxPeriod.currentText()
         end_date = QDate.currentDate()
@@ -216,7 +223,7 @@ class MainWindow(QMainWindow):
             return
 
         self.ui.dateEditStart.setDate(start_date)
-        self.update_stock_history()
+        self.reload_active_stock_history()
 
     def filter_stock_list(self):
         keyword = self.ui.lineEditKeyWord.text().lower()
@@ -227,9 +234,9 @@ class MainWindow(QMainWindow):
     def close_application(self):
         self.close()
 
-    def update_stock_history(self, list_widget=None):
+    def update_stock_history(self, list_widget):
         if list_widget is None:
-            list_widget = self.ui.listWidgetStocks
+            return
 
         current_item = list_widget.currentItem()
         if current_item is None:
