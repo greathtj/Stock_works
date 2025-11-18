@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1465</width>
-    <height>952</height>
+    <width>1302</width>
+    <height>741</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -37,7 +43,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QFrame" name="frame_4">
+        <widget class="QTabWidget" name="tabWidget_2">
          <property name="minimumSize">
           <size>
            <width>250</width>
@@ -50,207 +56,322 @@
            <height>16777215</height>
           </size>
          </property>
-         <property name="frameShape">
-          <enum>QFrame::Shape::StyledPanel</enum>
+         <property name="currentIndex">
+          <number>0</number>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Shadow::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <item>
-           <widget class="QComboBox" name="comboBoxMarket">
-            <item>
-             <property name="text">
-              <string>KOSPI</string>
+         <widget class="QWidget" name="tabAll">
+          <attribute name="title">
+           <string>All</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QComboBox" name="comboBoxMarket">
+             <item>
+              <property name="text">
+               <string>KOSPI</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>KOSDAQ</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>NYSE</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>NASDAQ</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListWidget" name="listWidgetStocks"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonAddSelected">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
              </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>KOSDAQ</string>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
              </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>NYSE</string>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
              </property>
-            </item>
-            <item>
              <property name="text">
-              <string>NASDAQ</string>
+              <string>Add to Selected</string>
              </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QListWidget" name="listWidgetStocks"/>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="lineEditKeyWord"/>
-          </item>
-         </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEditKeyWord"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tabSelected">
+          <attribute name="title">
+           <string>Selected</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <item>
+            <widget class="QListWidget" name="listWidgetSelectedTickers">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="pushButtonRemoveSelected">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Remove from Selected</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame_2">
-         <property name="frameShape">
-          <enum>QFrame::Shape::StyledPanel</enum>
+        <widget class="QTabWidget" name="tabWidget">
+         <property name="currentIndex">
+          <number>0</number>
          </property>
-         <property name="frameShadow">
-          <enum>QFrame::Shadow::Raised</enum>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QLabel" name="label">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Start</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDateEdit" name="dateEditStart">
-              <property name="dateTime">
-               <datetime>
-                <hour>15</hour>
-                <minute>0</minute>
-                <second>0</second>
-                <year>2023</year>
-                <month>12</month>
-                <day>31</day>
-               </datetime>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_2">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>End</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDateEdit" name="dateEditEnd">
-              <property name="dateTime">
-               <datetime>
-                <hour>15</hour>
-                <minute>0</minute>
-                <second>0</second>
-                <year>2024</year>
-                <month>12</month>
-                <day>31</day>
-               </datetime>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="comboBoxPeriod">
-              <item>
-               <property name="text">
-                <string>1 Year</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>6 Months</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>1 Month</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>2 Weeks</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>1 Week</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Custom</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="pushButtonReload">
-              <property name="text">
-               <string>Reload</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <widget class="QFrame" name="frame_5">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Shape::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Shadow::Raised</enum>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <widget class="QWidget" name="tabData">
+          <attribute name="title">
+           <string>Data</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
              <item>
-              <widget class="QTableWidget" name="tableWidgetHistory">
-               <property name="minimumSize">
-                <size>
-                 <width>400</width>
-                 <height>0</height>
-                </size>
+              <widget class="QLabel" name="label">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
-               <property name="maximumSize">
-                <size>
-                 <width>400</width>
-                 <height>16777215</height>
-                </size>
+               <property name="text">
+                <string>Start</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QFrame" name="frame_6">
-               <property name="frameShape">
-                <enum>QFrame::Shape::StyledPanel</enum>
+              <widget class="QDateEdit" name="dateEditStart">
+               <property name="dateTime">
+                <datetime>
+                 <hour>6</hour>
+                 <minute>0</minute>
+                 <second>0</second>
+                 <year>2023</year>
+                 <month>12</month>
+                 <day>31</day>
+                </datetime>
                </property>
-               <property name="frameShadow">
-                <enum>QFrame::Shadow::Raised</enum>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_6">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayoutPlotPrice"/>
-                </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayoutPlotAmout"/>
-                </item>
-               </layout>
+               <property name="text">
+                <string>End</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDateEdit" name="dateEditEnd">
+               <property name="dateTime">
+                <datetime>
+                 <hour>6</hour>
+                 <minute>0</minute>
+                 <second>0</second>
+                 <year>2024</year>
+                 <month>12</month>
+                 <day>31</day>
+                </datetime>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="comboBoxPeriod">
+               <item>
+                <property name="text">
+                 <string>1 Year</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>6 Months</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1 Month</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>2 Weeks</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>1 Week</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Custom</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonReload">
+               <property name="text">
+                <string>Reload</string>
+               </property>
               </widget>
              </item>
             </layout>
-           </widget>
-          </item>
-         </layout>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_5">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::Shape::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QTableWidget" name="tableWidgetHistory">
+                <property name="minimumSize">
+                 <size>
+                  <width>400</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>400</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QFrame" name="frame_6">
+                <property name="frameShape">
+                 <enum>QFrame::Shape::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Shadow::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayoutPlotPrice"/>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayoutPlotAmout"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tabTopDrops">
+          <attribute name="title">
+           <string>Top drops</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_3"/>
+           </item>
+           <item>
+            <widget class="QFrame" name="frame_2">
+             <property name="frameShape">
+              <enum>QFrame::Shape::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Shadow::Raised</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
@@ -285,8 +406,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1465</width>
-     <height>23</height>
+     <width>1302</width>
+     <height>33</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

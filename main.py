@@ -3,7 +3,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="pykrx")
 import sys
 import qdarkstyle
 from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QVBoxLayout
-from PySide6.QtCore import QDate
+from PySide6.QtCore import QDate, QThread, Signal
 from main_ui import Ui_MainWindow
 from pykrx import stock
 import datetime
@@ -11,12 +11,75 @@ import pandas as pd
 import yfinance as yf
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+import json
 
 class MplCanvas(FigureCanvas):
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         self.axes = fig.add_subplot(111)
         super(MplCanvas, self).__init__(fig)
+
+class Worker(QThread):
+    finished = Signal(object)
+
+    def __init__(self, market, period):
+        super().__init__()
+        self.market = market
+        self.period = period
+
+    def run(self):
+        today = datetime.datetime.now()
+        if self.period == "1 Day":
+            start_date = today - datetime.timedelta(days=1)
+        elif self.period == "1 Week":
+            start_date = today - datetime.timedelta(weeks=1)
+        elif self.period == "1 Month":
+            start_date = today - datetime.timedelta(days=30)
+        else:
+            start_date = today - datetime.timedelta(days=1)
+
+        start_date_str = start_date.strftime("%Y-%m-%d")
+        end_date_str = today.strftime("%Y-%m-%d")
+
+        results = []
+        if self.market in ["KOSPI", "KOSDAQ"]:
+            tickers = stock.get_market_ticker_list(today.strftime("%Y%m%d"), market=self.market)
+            for ticker in tickers[:20]: # Limiting for performance
+                try:
+                    df = stock.get_market_ohlcv(start_date.strftime("%Y%m%d"), today.strftime("%Y%m%d"), ticker)
+                    if not df.empty:
+                        price_change = (df['종가'][-1] - df['종가'][0]) / df['종가'][0] * 100
+                        name = stock.get_market_ticker_name(ticker)
+                        results.append((name, ticker, price_change))
+                except Exception as e:
+                    print(f"Error fetching {ticker}: {e}")
+        elif self.market in ["NYSE", "NASDAQ"]:
+            if self.market == "NYSE":
+                csv_file = "nyse-listed.csv"
+                symbol_col = "ACT Symbol"
+                name_col = "Company Name"
+            else:
+                csv_file = "nasdaq-listed.csv"
+                symbol_col = "Symbol"
+                name_col = "Security Name"
+            try:
+                df_tickers = pd.read_csv(csv_file)
+                for index, row in df_tickers.head(20).iterrows(): # Limiting for performance
+                    ticker = row[symbol_col]
+                    name = row[name_col]
+                    try:
+                        df = yf.Ticker(ticker).history(start=start_date_str, end=end_date_str)
+                        if not df.empty:
+                            price_change = (df['Close'][-1] - df['Close'][0]) / df['Close'][0] * 100
+                            results.append((name, ticker, price_change))
+                    except Exception as e:
+                        print(f"Error fetching {ticker}: {e}")
+            except FileNotFoundError:
+                print(f"{csv_file} not found.")
+
+        results.sort(key=lambda x: x[2])
+        self.finished.emit(results)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -37,9 +100,12 @@ class MainWindow(QMainWindow):
         self.ui.dateEditStart.setDate(QDate.currentDate().addYears(-1))
 
         # Connect listWidgetStocks to update_stock_history
-        self.ui.listWidgetStocks.currentItemChanged.connect(self.update_stock_history)
+        self.ui.listWidgetStocks.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
         # Connect pushButtonReload to update_stock_history
-        self.ui.pushButtonReload.clicked.connect(self.update_stock_history)
+        self.ui.pushButtonReload.clicked.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
+
+        # Connect listWidgetSelectedTickers to update_stock_history
+        self.ui.listWidgetSelectedTickers.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetSelectedTickers))
 
         # Connect lineEditKeyWord to filter_stock_list
         self.ui.lineEditKeyWord.textChanged.connect(self.filter_stock_list)
@@ -52,6 +118,76 @@ class MainWindow(QMainWindow):
 
         # Connect comboBoxPeriod to period_changed
         self.ui.comboBoxPeriod.currentIndexChanged.connect(self.period_changed)
+
+        # Connect pushButtonAddSelected to add_selected_ticker
+        self.ui.pushButtonAddSelected.clicked.connect(self.add_selected_ticker)
+
+        # Connect pushButtonRemoveSelected to remove_selected_ticker
+        self.ui.pushButtonRemoveSelected.clicked.connect(self.remove_selected_ticker)
+
+        # Setup for Top Decliners tab
+        if hasattr(self.ui, 'pushButtonFindDecliners'):
+            self.ui.pushButtonFindDecliners.clicked.connect(self.find_top_decliners)
+            self.ui.comboBoxDeclinersPeriod.addItems(["1 Day", "1 Week", "1 Month"])
+
+        # Load selected tickers from file
+        self.load_selected_tickers()
+
+    def save_selected_tickers(self):
+        items = []
+        for i in range(self.ui.listWidgetSelectedTickers.count()):
+            items.append(self.ui.listWidgetSelectedTickers.item(i).text())
+        with open("selected.json", "w") as f:
+            json.dump(items, f)
+
+    def load_selected_tickers(self):
+        try:
+            with open("selected.json", "r") as f:
+                items = json.load(f)
+                self.ui.listWidgetSelectedTickers.addItems(items)
+        except FileNotFoundError:
+            pass # No file to load
+
+    def add_selected_ticker(self):
+        current_item = self.ui.listWidgetStocks.currentItem()
+        if current_item:
+            item_text = current_item.text()
+            # Check if the item already exists in listWidgetSelectedTickers
+            for i in range(self.ui.listWidgetSelectedTickers.count()):
+                if self.ui.listWidgetSelectedTickers.item(i).text() == item_text:
+                    return # Item already exists, do not add
+            self.ui.listWidgetSelectedTickers.addItem(item_text)
+            self.save_selected_tickers()
+
+    def remove_selected_ticker(self):
+        current_item = self.ui.listWidgetSelectedTickers.currentItem()
+        if current_item:
+            self.ui.listWidgetSelectedTickers.takeItem(self.ui.listWidgetSelectedTickers.row(current_item))
+            self.save_selected_tickers()
+
+    def find_top_decliners(self):
+        market = self.ui.comboBoxMarket.currentText()
+        period = self.ui.comboBoxDeclinersPeriod.currentText()
+        self.worker = Worker(market, period)
+        self.worker.finished.connect(self.update_decliners_table)
+        self.worker.start()
+        if hasattr(self.ui, 'pushButtonFindDecliners'):
+            self.ui.pushButtonFindDecliners.setText("Loading...")
+            self.ui.pushButtonFindDecliners.setEnabled(False)
+
+    def update_decliners_table(self, results):
+        if hasattr(self.ui, 'tableWidgetDecliners'):
+            self.ui.tableWidgetDecliners.clear()
+            self.ui.tableWidgetDecliners.setRowCount(len(results))
+            self.ui.tableWidgetDecliners.setColumnCount(3)
+            self.ui.tableWidgetDecliners.setHorizontalHeaderLabels(["Name", "Ticker", "Change (%)"])
+            for i, (name, ticker, change) in enumerate(results):
+                self.ui.tableWidgetDecliners.setItem(i, 0, QTableWidgetItem(name))
+                self.ui.tableWidgetDecliners.setItem(i, 1, QTableWidgetItem(ticker))
+                self.ui.tableWidgetDecliners.setItem(i, 2, QTableWidgetItem(f"{change:.2f}%"))
+        if hasattr(self.ui, 'pushButtonFindDecliners'):
+            self.ui.pushButtonFindDecliners.setText("Find Decliners")
+            self.ui.pushButtonFindDecliners.setEnabled(True)
 
     def period_changed(self):
         period = self.ui.comboBoxPeriod.currentText()
@@ -91,8 +227,11 @@ class MainWindow(QMainWindow):
     def close_application(self):
         self.close()
 
-    def update_stock_history(self):
-        current_item = self.ui.listWidgetStocks.currentItem()
+    def update_stock_history(self, list_widget=None):
+        if list_widget is None:
+            list_widget = self.ui.listWidgetStocks
+
+        current_item = list_widget.currentItem()
         if current_item is None:
             return
 
