@@ -63,17 +63,37 @@ class Worker(QThread):
                 symbol_col = "Symbol"
                 name_col = "Security Name"
             try:
-                df_tickers = pd.read_csv(csv_file)
-                for index, row in df_tickers.head(20).iterrows(): # Limiting for performance
-                    ticker = row[symbol_col]
-                    name = row[name_col]
-                    try:
-                        df = yf.Ticker(ticker).history(start=start_date_str, end=end_date_str)
-                        if not df.empty:
-                            price_change = (df['Close'].iloc[-1] - df['Close'].iloc[0]) / df['Close'].iloc[0] * 100
-                            results.append((name, ticker, price_change))
-                    except Exception as e:
-                        print(f"Error fetching {ticker}: {e}")
+                df_tickers = pd.read_csv(csv_file).dropna(subset=[symbol_col, name_col])
+                # Filter out tickers with non-alphanumeric characters, keeping only uppercase letter tickers
+                df_tickers = df_tickers[df_tickers[symbol_col].str.match(r'^[A-Z]+$')]
+                
+                # Keep fetching until we have 20 results or have tried all tickers
+                while len(results) < 20 and not df_tickers.empty:
+                    sample_size = min(100, len(df_tickers))
+                    for index, row in df_tickers.sample(n=sample_size).iterrows():
+                        ticker = row[symbol_col]
+                        name = row[name_col]
+                        
+                        # Remove the ticker from the list to avoid re-fetching
+                        df_tickers = df_tickers.drop(index)
+
+                        try:
+                            ticker_obj = yf.Ticker(ticker)
+                            df = ticker_obj.history(start=start_date_str, end=end_date_str)
+                            if not df.empty and 'Close' in df.columns and not df['Close'].isnull().all():
+                                if len(df['Close']) > 1:
+                                    price_change = (df['Close'].iloc[-1] - df['Close'].iloc[0]) / df['Close'].iloc[0] * 100
+                                    results.append((name, ticker, price_change))
+                                    if len(results) >= 20:
+                                        break 
+                                else:
+                                    print(f"Not enough data for {ticker} to calculate change.")
+                            else:
+                                print(f"No data for {ticker}, possibly delisted.")
+                        except Exception as e:
+                            print(f"Failed to get ticker '{ticker}' reason: {e}")
+                    if len(results) >= 20:
+                        break
             except FileNotFoundError:
                 print(f"{csv_file} not found.")
 
@@ -248,23 +268,37 @@ class MainWindow(QMainWindow):
         end_date = self.ui.dateEditEnd.date().toString("yyyy-MM-dd")
 
         try:
+            df = None
             if selected_market in ["KOSPI", "KOSDAQ"]:
                 df = stock.get_market_ohlcv(self.ui.dateEditStart.date().toString("yyyyMMdd"), self.ui.dateEditEnd.date().toString("yyyyMMdd"), ticker)
             elif selected_market in ["NYSE", "NASDAQ"]:
-                df = yf.Ticker(ticker).history(start=start_date, end=end_date)
+                ticker_obj = yf.Ticker(ticker)
+                df = ticker_obj.history(start=start_date, end=end_date)
+                if df.empty:
+                    print(f"No history for {ticker}, possibly delisted.")
+                    
+            if df is not None and not df.empty:
+                self.populate_history_table(df)
+                self.plot_stock_data(df, selected_market)
             else:
+                # Clear table and plots if no data is found
                 self.ui.tableWidgetHistory.clear()
                 self.ui.tableWidgetHistory.setRowCount(0)
                 self.ui.tableWidgetHistory.setColumnCount(0)
-                return
+                self.price_canvas.axes.cla()
+                self.price_canvas.draw()
+                self.amount_canvas.axes.cla()
+                self.amount_canvas.draw()
 
-            self.populate_history_table(df)
-            self.plot_stock_data(df, selected_market)
         except Exception as e:
-            print(f"Error fetching stock history: {e}")
+            print(f"Error fetching stock history for {ticker}: {e}")
             self.ui.tableWidgetHistory.clear()
             self.ui.tableWidgetHistory.setRowCount(0)
             self.ui.tableWidgetHistory.setColumnCount(0)
+            self.price_canvas.axes.cla()
+            self.price_canvas.draw()
+            self.amount_canvas.axes.cla()
+            self.amount_canvas.draw()
 
     def plot_stock_data(self, df, market):
         price_col = '종가' if market in ["KOSPI", "KOSDAQ"] else 'Close'
@@ -272,8 +306,18 @@ class MainWindow(QMainWindow):
 
         # Plot price
         self.price_canvas.axes.cla()
-        self.price_canvas.axes.plot(df.index, df[price_col])
+        self.price_canvas.axes.plot(df.index, df[price_col], label='Price')
+        
+        # Calculate and plot moving averages
+        if len(df) >= 20:
+            ma20 = df[price_col].rolling(window=20).mean()
+            self.price_canvas.axes.plot(df.index, ma20, label='20-Day MA')
+        if len(df) >= 50:
+            ma50 = df[price_col].rolling(window=50).mean()
+            self.price_canvas.axes.plot(df.index, ma50, label='50-Day MA')
+            
         self.price_canvas.axes.set_title("Price")
+        self.price_canvas.axes.legend()
         self.price_canvas.draw()
 
         # Plot volume
@@ -310,14 +354,16 @@ class MainWindow(QMainWindow):
                 self.ui.listWidgetStocks.addItem(f"{name} ({ticker})")
         elif selected_market == "NYSE":
             try:
-                df = pd.read_csv("nyse-listed.csv")
+                df = pd.read_csv("nyse-listed.csv").dropna(subset=["ACT Symbol", "Company Name"])
+                df = df[df["ACT Symbol"].str.match(r'^[A-Z]+$')]
                 for index, row in df.iterrows():
                     self.ui.listWidgetStocks.addItem(f"{row['Company Name']} ({row['ACT Symbol']})")
             except FileNotFoundError:
                 self.ui.listWidgetStocks.addItem("nyse-listed.csv not found.")
         elif selected_market == "NASDAQ":
             try:
-                df = pd.read_csv("nasdaq-listed.csv")
+                df = pd.read_csv("nasdaq-listed.csv").dropna(subset=["Symbol", "Security Name"])
+                df = df[df["Symbol"].str.match(r'^[A-Z]+$')]
                 for index, row in df.iterrows():
                     self.ui.listWidgetStocks.addItem(f"{row['Security Name']} ({row['Symbol']})")
             except FileNotFoundError:
@@ -328,6 +374,15 @@ def main():
     app = QApplication(sys.argv)
     app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyside6'))
     window = MainWindow()
+    
+    # Gracefully terminate the worker thread on application exit
+    def cleanup():
+        if hasattr(window, 'worker') and window.worker.isRunning():
+            window.worker.terminate()
+            window.worker.wait() # Wait for the thread to finish
+    
+    app.aboutToQuit.connect(cleanup)
+
     window.show()
     sys.exit(app.exec())
 

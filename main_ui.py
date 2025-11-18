@@ -16,12 +16,12 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QComboBox, QDateEdit, QFrame,
-    QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QListWidget, QListWidgetItem, QMainWindow, QMenu,
-    QMenuBar, QPushButton, QSizePolicy, QStatusBar,
-    QTabWidget, QTableWidget, QTableWidgetItem, QVBoxLayout,
-    QWidget)
+from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QDateEdit,
+    QFrame, QHBoxLayout, QHeaderView, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
+    QMenu, QMenuBar, QPushButton, QSizePolicy,
+    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
+    QTextBrowser, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -232,10 +232,25 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_4)
 
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.tableWidgetDecliners = QTableWidget(self.tabTopDrops)
         self.tableWidgetDecliners.setObjectName(u"tableWidgetDecliners")
+        sizePolicy2.setHeightForWidth(self.tableWidgetDecliners.sizePolicy().hasHeightForWidth())
+        self.tableWidgetDecliners.setSizePolicy(sizePolicy2)
+        self.tableWidgetDecliners.setMinimumSize(QSize(350, 0))
+        self.tableWidgetDecliners.setMaximumSize(QSize(350, 16777215))
+        self.tableWidgetDecliners.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
 
-        self.verticalLayout_3.addWidget(self.tableWidgetDecliners)
+        self.horizontalLayout_5.addWidget(self.tableWidgetDecliners)
+
+        self.textBrowser = QTextBrowser(self.tabTopDrops)
+        self.textBrowser.setObjectName(u"textBrowser")
+
+        self.horizontalLayout_5.addWidget(self.textBrowser)
+
+
+        self.verticalLayout_3.addLayout(self.horizontalLayout_5)
 
         self.tabWidget.addTab(self.tabTopDrops, "")
 
@@ -270,7 +285,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tabWidget_2.setCurrentIndex(0)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -299,7 +314,7 @@ class Ui_MainWindow(object):
 
         self.pushButtonReload.setText(QCoreApplication.translate("MainWindow", u"Reload", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabData), QCoreApplication.translate("MainWindow", u"Data", None))
-        self.pushButtonFindDecliners.setText(QCoreApplication.translate("MainWindow", u"PushButton", None))
+        self.pushButtonFindDecliners.setText(QCoreApplication.translate("MainWindow", u"Find Declineers", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabTopDrops), QCoreApplication.translate("MainWindow", u"Top drops", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
