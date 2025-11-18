@@ -119,21 +119,17 @@ class MainWindow(QMainWindow):
         # Connect comboBoxPeriod to period_changed
         self.ui.comboBoxPeriod.currentIndexChanged.connect(self.period_changed)
 
-<<<<<<< HEAD
         # Connect pushButtonAddSelected to add_selected_ticker
         self.ui.pushButtonAddSelected.clicked.connect(self.add_selected_ticker)
 
         # Connect pushButtonRemoveSelected to remove_selected_ticker
         self.ui.pushButtonRemoveSelected.clicked.connect(self.remove_selected_ticker)
 
-=======
->>>>>>> 99fdcac599a8e743559c23a86709a52cee902e23
         # Setup for Top Decliners tab
         if hasattr(self.ui, 'pushButtonFindDecliners'):
             self.ui.pushButtonFindDecliners.clicked.connect(self.find_top_decliners)
             self.ui.comboBoxDeclinersPeriod.addItems(["1 Day", "1 Week", "1 Month"])
 
-<<<<<<< HEAD
         # Load selected tickers from file
         self.load_selected_tickers()
 
@@ -169,8 +165,6 @@ class MainWindow(QMainWindow):
             self.ui.listWidgetSelectedTickers.takeItem(self.ui.listWidgetSelectedTickers.row(current_item))
             self.save_selected_tickers()
 
-=======
->>>>>>> 99fdcac599a8e743559c23a86709a52cee902e23
     def find_top_decliners(self):
         market = self.ui.comboBoxMarket.currentText()
         period = self.ui.comboBoxDeclinersPeriod.currentText()
