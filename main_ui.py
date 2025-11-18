@@ -90,7 +90,7 @@ class Ui_MainWindow(object):
 
         self.dateEditStart = QDateEdit(self.frame_2)
         self.dateEditStart.setObjectName(u"dateEditStart")
-        self.dateEditStart.setDateTime(QDateTime(QDate(2024, 1, 1), QTime(0, 0, 0)))
+        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 31), QTime(15, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditStart)
 
@@ -103,9 +103,20 @@ class Ui_MainWindow(object):
 
         self.dateEditEnd = QDateEdit(self.frame_2)
         self.dateEditEnd.setObjectName(u"dateEditEnd")
-        self.dateEditEnd.setDateTime(QDateTime(QDate(2025, 1, 1), QTime(0, 0, 0)))
+        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 31), QTime(15, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditEnd)
+
+        self.comboBoxPeriod = QComboBox(self.frame_2)
+        self.comboBoxPeriod.addItem("")
+        self.comboBoxPeriod.addItem("")
+        self.comboBoxPeriod.addItem("")
+        self.comboBoxPeriod.addItem("")
+        self.comboBoxPeriod.addItem("")
+        self.comboBoxPeriod.addItem("")
+        self.comboBoxPeriod.setObjectName(u"comboBoxPeriod")
+
+        self.horizontalLayout_2.addWidget(self.comboBoxPeriod)
 
         self.pushButtonReload = QPushButton(self.frame_2)
         self.pushButtonReload.setObjectName(u"pushButtonReload")
@@ -199,6 +210,13 @@ class Ui_MainWindow(object):
 
         self.label.setText(QCoreApplication.translate("MainWindow", u"Start", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"End", None))
+        self.comboBoxPeriod.setItemText(0, QCoreApplication.translate("MainWindow", u"1 Year", None))
+        self.comboBoxPeriod.setItemText(1, QCoreApplication.translate("MainWindow", u"6 Months", None))
+        self.comboBoxPeriod.setItemText(2, QCoreApplication.translate("MainWindow", u"1 Month", None))
+        self.comboBoxPeriod.setItemText(3, QCoreApplication.translate("MainWindow", u"2 Weeks", None))
+        self.comboBoxPeriod.setItemText(4, QCoreApplication.translate("MainWindow", u"1 Week", None))
+        self.comboBoxPeriod.setItemText(5, QCoreApplication.translate("MainWindow", u"Custom", None))
+
         self.pushButtonReload.setText(QCoreApplication.translate("MainWindow", u"Reload", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi

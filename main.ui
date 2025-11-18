@@ -118,12 +118,12 @@
              <widget class="QDateEdit" name="dateEditStart">
               <property name="dateTime">
                <datetime>
-                <hour>0</hour>
+                <hour>15</hour>
                 <minute>0</minute>
                 <second>0</second>
-                <year>2024</year>
-                <month>1</month>
-                <day>1</day>
+                <year>2023</year>
+                <month>12</month>
+                <day>31</day>
                </datetime>
               </property>
              </widget>
@@ -145,14 +145,48 @@
              <widget class="QDateEdit" name="dateEditEnd">
               <property name="dateTime">
                <datetime>
-                <hour>0</hour>
+                <hour>15</hour>
                 <minute>0</minute>
                 <second>0</second>
-                <year>2025</year>
-                <month>1</month>
-                <day>1</day>
+                <year>2024</year>
+                <month>12</month>
+                <day>31</day>
                </datetime>
               </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxPeriod">
+              <item>
+               <property name="text">
+                <string>1 Year</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>6 Months</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1 Month</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>2 Weeks</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1 Week</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Custom</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item>

@@ -50,6 +50,38 @@ class MainWindow(QMainWindow):
         self.amount_canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.ui.verticalLayoutPlotAmout.addWidget(self.amount_canvas)
 
+        # Connect comboBoxPeriod to period_changed
+        self.ui.comboBoxPeriod.currentIndexChanged.connect(self.period_changed)
+
+    def period_changed(self):
+        period = self.ui.comboBoxPeriod.currentText()
+        end_date = QDate.currentDate()
+        self.ui.dateEditEnd.setDate(end_date)
+
+        if period == "Custom":
+            self.ui.dateEditStart.setEnabled(True)
+            self.ui.dateEditEnd.setEnabled(True)
+            return
+        else:
+            self.ui.dateEditStart.setEnabled(False)
+            self.ui.dateEditEnd.setEnabled(False)
+
+        if period == "1 Year":
+            start_date = end_date.addYears(-1)
+        elif period == "6 Months":
+            start_date = end_date.addMonths(-6)
+        elif period == "1 Month" or period == "1 Months":
+            start_date = end_date.addMonths(-1)
+        elif period == "2 Weeks":
+            start_date = end_date.addDays(-14)
+        elif period == "1 Week":
+            start_date = end_date.addDays(-7)
+        else:
+            return
+
+        self.ui.dateEditStart.setDate(start_date)
+        self.update_stock_history()
+
     def filter_stock_list(self):
         keyword = self.ui.lineEditKeyWord.text().lower()
         for i in range(self.ui.listWidgetStocks.count()):
