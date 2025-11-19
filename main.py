@@ -2,8 +2,8 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="pykrx")
 import sys
 import qdarkstyle
-from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QVBoxLayout
-from PySide6.QtCore import QDate, QThread, Signal
+from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QVBoxLayout, QAbstractItemView
+from PySide6.QtCore import QDate, QThread, Signal, QUrl
 from main_ui import Ui_MainWindow
 from pykrx import stock
 import datetime
@@ -149,6 +149,10 @@ class MainWindow(QMainWindow):
         if hasattr(self.ui, 'pushButtonFindDecliners'):
             self.ui.pushButtonFindDecliners.clicked.connect(self.find_top_decliners)
             self.ui.comboBoxDeclinersPeriod.addItems(["1 Day", "1 Week", "1 Month"])
+            self.ui.tableWidgetDecliners.cellClicked.connect(self.open_naver_finance)
+            self.ui.tableWidgetDecliners.setEditTriggers(QAbstractItemView.NoEditTriggers)
+            self.ui.tableWidgetDecliners.setSelectionBehavior(QAbstractItemView.SelectRows)
+            self.ui.tableWidgetDecliners.setSelectionMode(QAbstractItemView.SingleSelection)
 
         # Load selected tickers from file
         self.load_selected_tickers()
@@ -208,6 +212,14 @@ class MainWindow(QMainWindow):
         if hasattr(self.ui, 'pushButtonFindDecliners'):
             self.ui.pushButtonFindDecliners.setText("Find Decliners")
             self.ui.pushButtonFindDecliners.setEnabled(True)
+
+    def open_naver_finance(self, row, column):
+        # The ticker is in the second column (index 1)
+        ticker_item = self.ui.tableWidgetDecliners.item(row, 1)
+        if ticker_item:
+            ticker_code = ticker_item.text()
+            url = f"https://finance.naver.com/item/main.naver?code={ticker_code}"
+            self.ui.webEngineViewNaver.setUrl(QUrl(url))
 
     def reload_active_stock_history(self):
         if self.ui.tabWidget_2.currentWidget() == self.ui.tabSelected:
@@ -309,6 +321,9 @@ class MainWindow(QMainWindow):
         self.price_canvas.axes.plot(df.index, df[price_col], label='Price')
         
         # Calculate and plot moving averages
+        if len(df) >= 5:
+            ma5 = df[price_col].rolling(window=5).mean()
+            self.price_canvas.axes.plot(df.index, ma5, label='5-Day MA')
         if len(df) >= 20:
             ma20 = df[price_col].rolling(window=20).mean()
             self.price_canvas.axes.plot(df.index, ma20, label='20-Day MA')

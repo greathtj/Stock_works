@@ -16,12 +16,13 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QDateEdit,
     QFrame, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
     QMenu, QMenuBar, QPushButton, QSizePolicy,
     QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
-    QTextBrowser, QVBoxLayout, QWidget)
+    QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -135,7 +136,7 @@ class Ui_MainWindow(object):
 
         self.dateEditStart = QDateEdit(self.tabData)
         self.dateEditStart.setObjectName(u"dateEditStart")
-        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 30), QTime(21, 0, 0)))
+        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 30), QTime(12, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditStart)
 
@@ -148,7 +149,7 @@ class Ui_MainWindow(object):
 
         self.dateEditEnd = QDateEdit(self.tabData)
         self.dateEditEnd.setObjectName(u"dateEditEnd")
-        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 30), QTime(21, 0, 0)))
+        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 30), QTime(12, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditEnd)
 
@@ -244,10 +245,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_5.addWidget(self.tableWidgetDecliners)
 
-        self.textBrowser = QTextBrowser(self.tabTopDrops)
-        self.textBrowser.setObjectName(u"textBrowser")
+        self.webEngineViewNaver = QWebEngineView(self.tabTopDrops)
+        self.webEngineViewNaver.setObjectName(u"webEngineViewNaver")
+        self.webEngineViewNaver.setUrl(QUrl(u"https://finance.naver.com/"))
 
-        self.horizontalLayout_5.addWidget(self.textBrowser)
+        self.horizontalLayout_5.addWidget(self.webEngineViewNaver)
 
 
         self.verticalLayout_3.addLayout(self.horizontalLayout_5)
