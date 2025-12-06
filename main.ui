@@ -57,7 +57,7 @@
           </size>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabAll">
           <attribute name="title">
@@ -206,7 +206,7 @@
               <widget class="QDateEdit" name="dateEditStart">
                <property name="dateTime">
                 <datetime>
-                 <hour>12</hour>
+                 <hour>3</hour>
                  <minute>0</minute>
                  <second>0</second>
                  <year>2023</year>
@@ -233,7 +233,7 @@
               <widget class="QDateEdit" name="dateEditEnd">
                <property name="dateTime">
                 <datetime>
-                 <hour>12</hour>
+                 <hour>3</hour>
                  <minute>0</minute>
                  <second>0</second>
                  <year>2024</year>
@@ -446,7 +446,7 @@
      <x>0</x>
      <y>0</y>
      <width>1302</width>
-     <height>33</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

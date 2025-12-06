@@ -1,8 +1,9 @@
 import warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="pykrx")
 import sys
+import re
 import qdarkstyle
-from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QVBoxLayout, QAbstractItemView
+from PySide6.QtWidgets import QApplication, QMainWindow, QTableWidgetItem, QVBoxLayout, QAbstractItemView, QCheckBox, QHBoxLayout
 from PySide6.QtCore import QDate, QThread, Signal, QUrl
 from main_ui import Ui_MainWindow
 from pykrx import stock
@@ -120,12 +121,14 @@ class MainWindow(QMainWindow):
         self.ui.dateEditStart.setDate(QDate.currentDate().addYears(-1))
 
         # Connect listWidgetStocks to update_stock_history
-        self.ui.listWidgetStocks.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
+        # self.ui.listWidgetStocks.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
+        self.ui.listWidgetStocks.itemClicked.connect(lambda: self.update_stock_history(self.ui.listWidgetStocks))
         # Connect pushButtonReload to update_stock_history
         self.ui.pushButtonReload.clicked.connect(self.reload_active_stock_history)
 
         # Connect listWidgetSelectedTickers to update_stock_history
-        self.ui.listWidgetSelectedTickers.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetSelectedTickers))
+        # self.ui.listWidgetSelectedTickers.currentItemChanged.connect(lambda: self.update_stock_history(self.ui.listWidgetSelectedTickers))
+        self.ui.listWidgetSelectedTickers.itemClicked.connect(lambda: self.update_stock_history(self.ui.listWidgetSelectedTickers))
 
         # Connect lineEditKeyWord to filter_stock_list
         self.ui.lineEditKeyWord.textChanged.connect(self.filter_stock_list)
@@ -135,6 +138,28 @@ class MainWindow(QMainWindow):
         self.ui.verticalLayoutPlotPrice.addWidget(self.price_canvas)
         self.amount_canvas = MplCanvas(self, width=5, height=4, dpi=100)
         self.ui.verticalLayoutPlotAmout.addWidget(self.amount_canvas)
+
+        # Indicator Canvas
+        self.indicator_canvas = MplCanvas(self, width=5, height=4, dpi=100)
+        self.ui.verticalLayout_6.addWidget(self.indicator_canvas)
+        self.indicator_canvas.setVisible(False)
+
+        # Checkboxes for Indicators
+        self.checkbox_layout = QHBoxLayout()
+        self.check_bb = QCheckBox("Bollinger Bands")
+        self.check_rsi = QCheckBox("RSI")
+        self.check_macd = QCheckBox("MACD")
+        self.checkbox_layout.addWidget(self.check_bb)
+        self.checkbox_layout.addWidget(self.check_rsi)
+        self.checkbox_layout.addWidget(self.check_macd)
+        self.ui.verticalLayout_6.insertLayout(0, self.checkbox_layout)
+
+        self.check_bb.stateChanged.connect(self.on_indicator_toggled)
+        self.check_rsi.stateChanged.connect(self.on_indicator_toggled)
+        self.check_macd.stateChanged.connect(self.on_indicator_toggled)
+
+        self.current_df = None
+        self.current_market = None
 
         # Connect comboBoxPeriod to period_changed
         self.ui.comboBoxPeriod.currentIndexChanged.connect(self.period_changed)
@@ -156,6 +181,31 @@ class MainWindow(QMainWindow):
 
         # Load selected tickers from file
         self.load_selected_tickers()
+
+    def on_indicator_toggled(self):
+        if self.current_df is not None and not self.current_df.empty:
+            self.plot_stock_data(self.current_df, self.current_market)
+
+    def calculate_rsi(self, df, period=14, price_col='Close'):
+        delta = df[price_col].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+        rs = gain / loss
+        return 100 - (100 / (1 + rs))
+
+    def calculate_macd(self, df, short=12, long=26, signal=9, price_col='Close'):
+        short_ema = df[price_col].ewm(span=short, adjust=False).mean()
+        long_ema = df[price_col].ewm(span=long, adjust=False).mean()
+        macd = short_ema - long_ema
+        signal_line = macd.ewm(span=signal, adjust=False).mean()
+        return macd, signal_line
+
+    def calculate_bollinger_bands(self, df, window=20, num_std=2, price_col='Close'):
+        rolling_mean = df[price_col].rolling(window=window).mean()
+        rolling_std = df[price_col].rolling(window=window).std()
+        upper_band = rolling_mean + (rolling_std * num_std)
+        lower_band = rolling_mean - (rolling_std * num_std)
+        return upper_band, lower_band
 
     def save_selected_tickers(self):
         items = []
@@ -266,6 +316,15 @@ class MainWindow(QMainWindow):
     def close_application(self):
         self.close()
 
+    def get_market_for_ticker(self, ticker):
+        kospi_tickers = stock.get_market_ticker_list(market="KOSPI")
+        if ticker in kospi_tickers:
+            return "KOSPI"
+        kosdaq_tickers = stock.get_market_ticker_list(market="KOSDAQ")
+        if ticker in kosdaq_tickers:
+            return "KOSDAQ"
+        return "Unknown Market"
+
     def update_stock_history(self, list_widget):
         if list_widget is None:
             return
@@ -274,26 +333,60 @@ class MainWindow(QMainWindow):
         if current_item is None:
             return
 
-        selected_market = self.ui.comboBoxMarket.currentText()
+        self.ui.tabWidget.setCurrentWidget(self.ui.tabData)
+
         ticker = current_item.text().split("(")[-1].replace(")", "")
         start_date = self.ui.dateEditStart.date().toString("yyyy-MM-dd")
         end_date = self.ui.dateEditEnd.date().toString("yyyy-MM-dd")
 
+        df = None
+        info = None
+        
+        market = self.ui.comboBoxMarket.currentText()
+
+        if list_widget == self.ui.listWidgetSelectedTickers:
+            detected_market = self.get_market_for_ticker(ticker)
+            if detected_market != "Unknown Market":
+                self.ui.comboBoxMarket.setCurrentText(detected_market)
+                market = detected_market
+
         try:
-            df = None
-            if selected_market in ["KOSPI", "KOSDAQ"]:
+            if market in ["KOSPI", "KOSDAQ"]:
                 df = stock.get_market_ohlcv(self.ui.dateEditStart.date().toString("yyyyMMdd"), self.ui.dateEditEnd.date().toString("yyyyMMdd"), ticker)
-            elif selected_market in ["NYSE", "NASDAQ"]:
+                if df.empty:
+                    self.ui.statusbar.showMessage(f"No data for {ticker}. It might be delisted or an incorrect ticker.")
+                    return
+                
+                # For KOSPI/KOSDAQ, we can get limited info from pykrx
+                name = stock.get_market_ticker_name(ticker)
+                latest_price = df['종가'].iloc[-1]
+                change = df['종가'].iloc[-1] - df['종가'].iloc[-2] if len(df) > 1 else 0
+                volume = df['거래량'].iloc[-1]
+                status_message = f"{name} ({ticker}) - Market: {market}, Price: {latest_price}, Change: {change}, Volume: {volume}"
+                self.ui.statusbar.showMessage(status_message)
+                
+            elif market in ["NYSE", "NASDAQ"]:
                 ticker_obj = yf.Ticker(ticker)
                 df = ticker_obj.history(start=start_date, end=end_date)
                 if df.empty:
-                    print(f"No history for {ticker}, possibly delisted.")
-                    
+                    self.ui.statusbar.showMessage(f"No data for {ticker}. It might be delisted or an incorrect ticker.")
+                    return
+
+                info = ticker_obj.info
+                short_name = info.get('shortName', ticker.split(" (")[0])
+                price = info.get('regularMarketPrice', 'N/A')
+                change = info.get('regularMarketChange', 'N/A')
+                volume = info.get('regularMarketVolume', 'N/A')
+                status_message = f"{short_name} ({ticker}) - Market: {market}, Price: {price}, Change: {change:.2f}, Volume: {volume}"
+                self.ui.statusbar.showMessage(status_message)
+
             if df is not None and not df.empty:
+                self.current_df = df
+                self.current_market = market
                 self.populate_history_table(df)
-                self.plot_stock_data(df, selected_market)
+                self.plot_stock_data(df, market)
             else:
-                # Clear table and plots if no data is found
+                # Clear UI elements if no data is found
                 self.ui.tableWidgetHistory.clear()
                 self.ui.tableWidgetHistory.setRowCount(0)
                 self.ui.tableWidgetHistory.setColumnCount(0)
@@ -301,9 +394,12 @@ class MainWindow(QMainWindow):
                 self.price_canvas.draw()
                 self.amount_canvas.axes.cla()
                 self.amount_canvas.draw()
+                self.indicator_canvas.setVisible(False)
+
 
         except Exception as e:
-            print(f"Error fetching stock history for {ticker}: {e}")
+            self.ui.statusbar.showMessage(f"Error fetching stock history for {ticker}: {e}")
+            # Clear UI elements on error
             self.ui.tableWidgetHistory.clear()
             self.ui.tableWidgetHistory.setRowCount(0)
             self.ui.tableWidgetHistory.setColumnCount(0)
@@ -311,6 +407,7 @@ class MainWindow(QMainWindow):
             self.price_canvas.draw()
             self.amount_canvas.axes.cla()
             self.amount_canvas.draw()
+            self.indicator_canvas.setVisible(False)
 
     def plot_stock_data(self, df, market):
         price_col = '종가' if market in ["KOSPI", "KOSDAQ"] else 'Close'
@@ -330,6 +427,14 @@ class MainWindow(QMainWindow):
         if len(df) >= 50:
             ma50 = df[price_col].rolling(window=50).mean()
             self.price_canvas.axes.plot(df.index, ma50, label='50-Day MA')
+
+        # Plot Bollinger Bands if checked
+        show_bb = self.check_bb.isChecked()
+        if show_bb:
+            upper, lower = self.calculate_bollinger_bands(df, price_col=price_col)
+            self.price_canvas.axes.plot(df.index, upper, label='Upper BB', linestyle='--', alpha=0.5)
+            self.price_canvas.axes.plot(df.index, lower, label='Lower BB', linestyle='--', alpha=0.5)
+            self.price_canvas.axes.fill_between(df.index, upper, lower, color='gray', alpha=0.1)
             
         self.price_canvas.axes.set_title("Price")
         self.price_canvas.axes.legend()
@@ -340,6 +445,41 @@ class MainWindow(QMainWindow):
         self.amount_canvas.axes.bar(df.index, df[volume_col])
         self.amount_canvas.axes.set_title("Volume")
         self.amount_canvas.draw()
+
+        # Plot Indicators
+        self.indicator_canvas.axes.cla()
+        self.indicator_canvas.figure.clear() # Clear the figure to reset subplots
+        
+        show_rsi = self.check_rsi.isChecked()
+        show_macd = self.check_macd.isChecked()
+
+        if show_rsi or show_macd:
+            self.indicator_canvas.setVisible(True)
+            num_plots = (1 if show_rsi else 0) + (1 if show_macd else 0)
+            
+            current_plot = 1
+            if show_rsi:
+                ax_rsi = self.indicator_canvas.figure.add_subplot(num_plots, 1, current_plot)
+                rsi = self.calculate_rsi(df, price_col=price_col)
+                ax_rsi.plot(df.index, rsi, label='RSI')
+                ax_rsi.axhline(70, color='red', linestyle='--')
+                ax_rsi.axhline(30, color='green', linestyle='--')
+                ax_rsi.set_title("RSI")
+                ax_rsi.legend()
+                current_plot += 1
+            
+            if show_macd:
+                ax_macd = self.indicator_canvas.figure.add_subplot(num_plots, 1, current_plot)
+                macd, signal = self.calculate_macd(df, price_col=price_col)
+                ax_macd.plot(df.index, macd, label='MACD')
+                ax_macd.plot(df.index, signal, label='Signal')
+                ax_macd.bar(df.index, macd - signal, label='Hist', color='gray', alpha=0.3)
+                ax_macd.set_title("MACD")
+                ax_macd.legend()
+            
+            self.indicator_canvas.draw()
+        else:
+            self.indicator_canvas.setVisible(False)
 
     def populate_history_table(self, df):
         self.ui.tableWidgetHistory.clear()
@@ -358,6 +498,7 @@ class MainWindow(QMainWindow):
                 self.ui.tableWidgetHistory.setItem(i, j + 1, QTableWidgetItem(str(row[col])))
 
     def update_stock_list(self):
+        self.ui.statusbar.clearMessage()
         selected_market = self.ui.comboBoxMarket.currentText()
         self.ui.listWidgetStocks.clear()
 
