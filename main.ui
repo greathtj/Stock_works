@@ -206,12 +206,12 @@
               <widget class="QDateEdit" name="dateEditStart">
                <property name="dateTime">
                 <datetime>
-                 <hour>3</hour>
+                 <hour>9</hour>
                  <minute>0</minute>
                  <second>0</second>
                  <year>2023</year>
                  <month>12</month>
-                 <day>30</day>
+                 <day>29</day>
                 </datetime>
                </property>
               </widget>
@@ -233,12 +233,12 @@
               <widget class="QDateEdit" name="dateEditEnd">
                <property name="dateTime">
                 <datetime>
-                 <hour>3</hour>
+                 <hour>9</hour>
                  <minute>0</minute>
                  <second>0</second>
                  <year>2024</year>
                  <month>12</month>
-                 <day>30</day>
+                 <day>29</day>
                 </datetime>
                </property>
               </widget>
@@ -365,7 +365,7 @@
              <item>
               <widget class="QPushButton" name="pushButtonFindDecliners">
                <property name="text">
-                <string>Find Declineers</string>
+                <string>Find Decliners</string>
                </property>
               </widget>
              </item>
@@ -408,6 +408,120 @@
               </widget>
              </item>
             </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tabTopDropsWeb">
+          <attribute name="title">
+           <string>Top Drops (web)</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_7">
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QPushButton" name="pushButtonDropWebBack">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>&lt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonDropWebHome">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>O</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="pushButtonDropWebForward">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>50</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>50</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer">
+               <property name="orientation">
+                <enum>Qt::Orientation::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QWebEngineView" name="webEngineViewKRX">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="url">
+              <url>
+               <string>https://data.krx.co.kr/contents/MMC/RANK/rank/MMCRANK003.cmd</string>
+              </url>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'main.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.10.0
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -21,8 +21,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QApplication, QComboBox, QDate
     QFrame, QHBoxLayout, QHeaderView, QLabel,
     QLineEdit, QListWidget, QListWidgetItem, QMainWindow,
     QMenu, QMenuBar, QPushButton, QSizePolicy,
-    QStatusBar, QTabWidget, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget)
+    QSpacerItem, QStatusBar, QTabWidget, QTableWidget,
+    QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
 
         self.dateEditStart = QDateEdit(self.tabData)
         self.dateEditStart.setObjectName(u"dateEditStart")
-        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 30), QTime(12, 0, 0)))
+        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 29), QTime(9, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditStart)
 
@@ -149,7 +149,7 @@ class Ui_MainWindow(object):
 
         self.dateEditEnd = QDateEdit(self.tabData)
         self.dateEditEnd.setObjectName(u"dateEditEnd")
-        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 30), QTime(12, 0, 0)))
+        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 29), QTime(9, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditEnd)
 
@@ -255,6 +255,58 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout_5)
 
         self.tabWidget.addTab(self.tabTopDrops, "")
+        self.tabTopDropsWeb = QWidget()
+        self.tabTopDropsWeb.setObjectName(u"tabTopDropsWeb")
+        self.verticalLayout_7 = QVBoxLayout(self.tabTopDropsWeb)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.pushButtonDropWebBack = QPushButton(self.tabTopDropsWeb)
+        self.pushButtonDropWebBack.setObjectName(u"pushButtonDropWebBack")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.pushButtonDropWebBack.sizePolicy().hasHeightForWidth())
+        self.pushButtonDropWebBack.setSizePolicy(sizePolicy5)
+        self.pushButtonDropWebBack.setMinimumSize(QSize(50, 0))
+        self.pushButtonDropWebBack.setMaximumSize(QSize(50, 16777215))
+
+        self.horizontalLayout_6.addWidget(self.pushButtonDropWebBack)
+
+        self.pushButtonDropWebHome = QPushButton(self.tabTopDropsWeb)
+        self.pushButtonDropWebHome.setObjectName(u"pushButtonDropWebHome")
+        sizePolicy5.setHeightForWidth(self.pushButtonDropWebHome.sizePolicy().hasHeightForWidth())
+        self.pushButtonDropWebHome.setSizePolicy(sizePolicy5)
+        self.pushButtonDropWebHome.setMinimumSize(QSize(50, 0))
+        self.pushButtonDropWebHome.setMaximumSize(QSize(50, 16777215))
+
+        self.horizontalLayout_6.addWidget(self.pushButtonDropWebHome)
+
+        self.pushButtonDropWebForward = QPushButton(self.tabTopDropsWeb)
+        self.pushButtonDropWebForward.setObjectName(u"pushButtonDropWebForward")
+        sizePolicy5.setHeightForWidth(self.pushButtonDropWebForward.sizePolicy().hasHeightForWidth())
+        self.pushButtonDropWebForward.setSizePolicy(sizePolicy5)
+        self.pushButtonDropWebForward.setMinimumSize(QSize(50, 0))
+        self.pushButtonDropWebForward.setMaximumSize(QSize(50, 16777215))
+
+        self.horizontalLayout_6.addWidget(self.pushButtonDropWebForward)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.horizontalLayout_6.addItem(self.horizontalSpacer)
+
+
+        self.verticalLayout_7.addLayout(self.horizontalLayout_6)
+
+        self.webEngineViewKRX = QWebEngineView(self.tabTopDropsWeb)
+        self.webEngineViewKRX.setObjectName(u"webEngineViewKRX")
+        sizePolicy4.setHeightForWidth(self.webEngineViewKRX.sizePolicy().hasHeightForWidth())
+        self.webEngineViewKRX.setSizePolicy(sizePolicy4)
+        self.webEngineViewKRX.setUrl(QUrl(u"https://data.krx.co.kr/contents/MMC/RANK/rank/MMCRANK003.cmd"))
+
+        self.verticalLayout_7.addWidget(self.webEngineViewKRX)
+
+        self.tabWidget.addTab(self.tabTopDropsWeb, "")
 
         self.horizontalLayout.addWidget(self.tabWidget)
 
@@ -273,7 +325,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1302, 33))
+        self.menubar.setGeometry(QRect(0, 0, 1302, 23))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
         MainWindow.setMenuBar(self.menubar)
@@ -286,7 +338,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget_2.setCurrentIndex(0)
+        self.tabWidget_2.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)
 
 
@@ -316,8 +368,12 @@ class Ui_MainWindow(object):
 
         self.pushButtonReload.setText(QCoreApplication.translate("MainWindow", u"Reload", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabData), QCoreApplication.translate("MainWindow", u"Data", None))
-        self.pushButtonFindDecliners.setText(QCoreApplication.translate("MainWindow", u"Find Declineers", None))
+        self.pushButtonFindDecliners.setText(QCoreApplication.translate("MainWindow", u"Find Decliners", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabTopDrops), QCoreApplication.translate("MainWindow", u"Top drops", None))
+        self.pushButtonDropWebBack.setText(QCoreApplication.translate("MainWindow", u"<", None))
+        self.pushButtonDropWebHome.setText(QCoreApplication.translate("MainWindow", u"O", None))
+        self.pushButtonDropWebForward.setText(QCoreApplication.translate("MainWindow", u">", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tabTopDropsWeb), QCoreApplication.translate("MainWindow", u"Top Drops (web)", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
     # retranslateUi
 
