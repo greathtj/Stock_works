@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
 
         self.dateEditStart = QDateEdit(self.tabData)
         self.dateEditStart.setObjectName(u"dateEditStart")
-        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 29), QTime(9, 0, 0)))
+        self.dateEditStart.setDateTime(QDateTime(QDate(2023, 12, 29), QTime(0, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditStart)
 
@@ -149,7 +149,7 @@ class Ui_MainWindow(object):
 
         self.dateEditEnd = QDateEdit(self.tabData)
         self.dateEditEnd.setObjectName(u"dateEditEnd")
-        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 29), QTime(9, 0, 0)))
+        self.dateEditEnd.setDateTime(QDateTime(QDate(2024, 12, 29), QTime(0, 0, 0)))
 
         self.horizontalLayout_2.addWidget(self.dateEditEnd)
 
@@ -338,7 +338,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tabWidget_2.setCurrentIndex(1)
+        self.tabWidget_2.setCurrentIndex(0)
         self.tabWidget.setCurrentIndex(0)
 
 
